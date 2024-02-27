@@ -13,24 +13,20 @@ const Step = ({ item }) => {
     }, []);
 
     return (
-        <View style={styles.container}>
-            <Video
-                ref={video}
-                style={{ width: width, height: height }}
-                isLooping
-                source={item.video}
-            />
-            <Text>{item.title}</Text>
-        </View>
+        <Video
+            ref={video}
+            style={{ width: width, height: height, transform: [{ scale: 1.25, }, { translateX: 39 }] }}
+            isLooping
+            source={item.video}
+        />
     );
 }
 
 export default Step;
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         justifyContent: 'center',
-        backgroundColor: 'red',
+        alignItems: 'center',
     },
     backgroundVideo: {
     },
