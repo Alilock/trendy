@@ -1,8 +1,10 @@
 import React, { useRef } from 'react';
-import { SafeAreaView, FlatList, View, Text, Dimensions, Animated } from 'react-native';
+import { SafeAreaView, FlatList, View, Text, Dimensions, Animated, Pressable } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import { Video } from 'expo-av';
 import Step from '../../src/components/onboarding/Step';
+import ArrowLeftSvg from '../../assets/svgs/ArrowLeftSvg';
+import ArrowRightSvg from '../../assets/svgs/ArrowRight';
 const { width, height } = Dimensions.get('window');
 
 const data = [
@@ -16,6 +18,7 @@ const data = [
 
 
 const Onboarding = () => {
+    const flatListRef = useRef(null);
     const pagerRef = useRef(null);
     const [currentPage, setCurrentPage] = React.useState(0); // Add this line
     const scrollX = useRef(new Animated.Value(0)).current; // Add this line
@@ -33,6 +36,7 @@ const Onboarding = () => {
                 <FlatList
                     data={data}
                     horizontal
+                    ref={flatListRef}
                     contentContainerStyle={{ overflow: 'hidden' }}
                     pagingEnabled
 
@@ -57,39 +61,77 @@ const Onboarding = () => {
                 left: 0,
                 gap: 24,
                 bottom: 68,
-            }}>
-                <View>
+            }}
+            >
+                <Pressable
+                    onPress={() => {
+                        flatListRef.current?.scrollToOffset({
+                            offset: (currentPage + 1) * width,
+                            animated: true,
+                        });
+                    }}
+                    style={{
+                        position: 'absolute',
+                        left: 24,
+                        top: 0,
+                        bottom: 0,
+                        display: currentPage === 0 ? 'none' : 'flex',
 
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}>
+                    <ArrowLeftSvg />
+                </Pressable>
+                <View style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    position: 'absolute',
+                    gap: 24,
+                }}>
+                    {data.map((_, i) => {
+                        const inputRange = [
+                            (i - 1) * width,
+                            i * width,
+                            (i + 1) * width
+                        ];
+                        const color = scrollX.interpolate({
+                            inputRange: inputRange,
+                            outputRange: ['transparent', 'white', 'transparent'],
+                            extrapolate: 'clamp',
+                        });
+
+                        return (
+                            <Animated.View
+                                key={i}
+                                style={{
+                                    height: 12,
+                                    width: 12,
+                                    backgroundColor: color,
+                                    borderRadius: 6,
+                                    borderWidth: 1.5,
+                                    borderColor: 'white',
+
+                                }}
+                            />
+                        )
+                    }
+                    )}
                 </View>
-                {data.map((_, i) => {
-                    const inputRange = [
-                        (i - 1) * width,
-                        i * width,
-                        (i + 1) * width
-                    ];
-                    const color = scrollX.interpolate({
-                        inputRange: inputRange,
-                        outputRange: ['transparent', 'white', 'transparent'],
-                        extrapolate: 'clamp',
-                    });
+                <Pressable
+                    onPress={() => {
 
-                    return (
-                        <Animated.View
-                            key={i}
-                            style={{
-                                height: 12,
-                                width: 12,
-                                backgroundColor: color,
-                                borderRadius: 6,
-                                borderWidth: 1.5,
-                                borderColor: 'white',
-
-                            }}
-                        />
-                    )
-                }
-                )}
-                <View></View>
+                    }}
+                    style={{
+                        position: 'absolute',
+                        right: 24,
+                        top: 0,
+                        bottom: 0,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}>
+                    <ArrowRightSvg />
+                </Pressable>
             </View>
 
         </View >
